@@ -12,7 +12,7 @@ typedef struct {
 // constant define
 const bool debug = false;
 
-const int disp_interval = 50;
+const int disp_interval = 100;
 
 const int digit[] = {2, 3, 4, 5}; // 7seg pin 0~4
 const int latch=9;  //74HC595  pin 9 STCP
@@ -117,7 +117,7 @@ void setup() {
   }
   irrecv.enableIRIn();
   Serial.begin(9600);
-  initialtime = 46530000; //set clock start time for microsecond
+  initialtime = 43200000; //set clock start time for microsecond
 }
 
 void loop() {
