@@ -1,5 +1,6 @@
 #include <SR04.h>
 #include <IRremote.h>
+#include <SimpleDHT.h>
 
 typedef unsigned long ul; 
 
@@ -21,6 +22,7 @@ const int data=8;   //74HC595  pin 8 DS
 const int trig = 6;
 const int echo = 7;
 const int IRreceiver = 11; // Signal Pin of IR receiver to Arduino Digital Pin 11
+int pinDHT11 = 12;
 
 #define UP 20
 #define DOWN 21
@@ -39,6 +41,7 @@ const unsigned char table[]=
 //set clock start time for microsecond
 ul initialtime;
 bool edit = false;
+bool usedh = false;
 int edit_index = 0;
 int setuptmp = 0;
 
@@ -46,6 +49,7 @@ int setuptmp = 0;
 SR04 sr04 = SR04(echo,trig);
 IRrecv irrecv(IRreceiver);
 decode_results results;
+SimpleDHT11 dht11;
 
 //custom function
 eztm get_tm(ul ms) {
@@ -125,15 +129,19 @@ void loop() {
   // control by remote
   if (irrecv.decode(&results)) {
     int a = IR2num();
-    if(debug){
-      Serial.print("IR receive");
+      Serial.print("IR receive: ");
       Serial.println(a);
-    }
     if(a == OK) {
       edit = true;
       edit_index = 0;
       setuptmp = 0;
+    } else if (a == UP) {
+      usedh = true;
+    } else if (a == DOWN) {
+      usedh = false;
     }
+    
+    // edit time mode
     if (edit && 0 <= a && 9 >= a) {
       setuptmp = (setuptmp * 10) + a;
       if(edit_index == 3) {
@@ -148,7 +156,7 @@ void loop() {
         if(debug) Serial.println(initialtime);
         edit = false;
       }
-      edit_index ++;
+      edit_index++;
     }
     
     irrecv.resume(); // receive the next value
@@ -156,7 +164,36 @@ void loop() {
     if(debug) Serial.println(setuptmp);
   }
 
-  if (edit) {
+  // DH11 read temperature and humidity
+  // dont work maybe out of memory
+  if (usedh) {
+    byte temperature = 0;
+    byte humidity = 0;
+    byte DH11rawdata[40] = {0};
+    if (dht11.read(12, &temperature, &humidity, DH11rawdata)) {
+      Serial.println("Read DHT11 failed");
+      return;
+    }
+    if (debug) {
+      Serial.print("Sample RAW Bits: ");
+      for (int i = 0; i < 40; i++) {
+        Serial.print((int)DH11rawdata[i]);
+        if (i > 0 && ((i + 1) % 4) == 0) {
+          Serial.print(' ');
+        }
+      }
+      Serial.println("");
+      
+      Serial.print("Sample OK: ");
+      Serial.print((int)temperature); Serial.print(" *C, ");
+      Serial.print((int)humidity); Serial.println(" %");
+    }
+    
+    Display4((ul)temperature);
+    delay(1000);
+    Display4((ul)humidity);
+    delay(1000);
+  } else if (edit) {
     Display4(setuptmp);
   } else {
     // fetch distance
@@ -177,15 +214,15 @@ void loop() {
     ul hm = t.hour*100 + t.minute;
     if(debug) Serial.println(hm);
     if(distance < 30) Display4(hm);
+
+    if(debug) {
+      Serial.println("time is");
+      Serial.println(real);
+      Serial.print(t.hour);
+      Serial.print(":");
+      Serial.print(t.minute);
+      Serial.print(":");
+      Serial.println(t.second);
+    }
   }
-  
-//  delay(1000);
-//  Serial.println("time is");
-//  Serial.println(real);
-//  Serial.print(t.hour);
-//  Serial.print(":");
-//  Serial.print(t.minute);
-//  Serial.print(":");
-//  Serial.println(t.second);
-//  delay(1000);
 }
