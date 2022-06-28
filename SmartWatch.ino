@@ -10,7 +10,7 @@ typedef struct {
 } eztm;
 
 // constant define
-const bool debug = true;
+const bool debug = false;
 
 const int disp_interval = 50;
 
@@ -39,7 +39,7 @@ const unsigned char table[]=
 //set clock start time for microsecond
 ul initialtime;
 bool edit = false;
-int keta = 0;
+int edit_index = 0;
 int setuptmp = 0;
 
 // set up ultra sonic sensor and IR sensor
@@ -78,6 +78,7 @@ void Display4(ul x) {
   }
 }
 
+// translate raw IR code to int
 int IR2num() {
   switch (results.value) {
     case 0xFF4AB5: return 0; break;
@@ -102,6 +103,7 @@ int IR2num() {
     case 0xFFFFFFFF: return REPT; break;  
     default: return OTHER; break;
   }
+  delay(500);
 }
 
 void setup() {
@@ -123,25 +125,40 @@ void loop() {
   // control by remote
   if (irrecv.decode(&results)) {
     int a = IR2num();
-    Serial.println(a);
+    if(debug){
+      Serial.print("IR receive");
+      Serial.println(a);
+    }
     if(a == OK) {
       edit = true;
-      keta = 0;
+      edit_index = 0;
       setuptmp = 0;
     }
     if (edit && 0 <= a && 9 >= a) {
       setuptmp = (setuptmp * 10) + a;
-      if(keta == 3) {
+      if(edit_index == 3) {
+        // edit state is end
+        // calculate and set initial time
+        int hourtmp = setuptmp / 100;
+        int minutetmp = setuptmp % 100;
+        ul tmp = (hourtmp * 60 + minutetmp);
+        tmp *= 60;
+        tmp *= 1000;
+        initialtime = tmp - millis();
+        if(debug) Serial.println(initialtime);
         edit = false;
       }
-      keta ++;
+      edit_index ++;
     }
     
     irrecv.resume(); // receive the next value
+    // display setup tmp
     if(debug) Serial.println(setuptmp);
   }
 
-  if (!edit) {
+  if (edit) {
+    Display4(setuptmp);
+  } else {
     // fetch distance
     long distance = sr04.Distance();
     if(debug) {
