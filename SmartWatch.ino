@@ -1,6 +1,6 @@
 #include <SR04.h>
 #include <IRremote.h>
-#include <SimpleDHT.h>
+// #include <SimpleDHT.h>
 
 typedef unsigned long ul; 
 
@@ -22,7 +22,8 @@ const int data=8;   //74HC595  pin 8 DS
 const int trig = 6;
 const int echo = 7;
 const int IRreceiver = 11; // Signal Pin of IR receiver to Arduino Digital Pin 11
-int pinDHT11 = 12;
+// int pinDHT11 = 12;
+const int thermometer = 0; // Analog pin for thermomistor
 
 #define UP 20
 #define DOWN 21
@@ -41,7 +42,7 @@ const unsigned char table[]=
 //set clock start time for microsecond
 ul initialtime;
 bool edit = false;
-bool usedh = false;
+bool thermo = false;
 int edit_index = 0;
 int setuptmp = 0;
 
@@ -49,7 +50,7 @@ int setuptmp = 0;
 SR04 sr04 = SR04(echo,trig);
 IRrecv irrecv(IRreceiver);
 decode_results results;
-SimpleDHT11 dht11;
+// SimpleDHT11 dht11;
 
 //custom function
 eztm get_tm(ul ms) {
@@ -136,9 +137,9 @@ void loop() {
       edit_index = 0;
       setuptmp = 0;
     } else if (a == UP) {
-      usedh = true;
+      thermo = true;
     } else if (a == DOWN) {
-      usedh = false;
+      thermo = false;
     }
     
     // edit time mode
@@ -166,7 +167,7 @@ void loop() {
 
   // DH11 read temperature and humidity
   // dont work maybe out of memory
-  if (usedh) {
+/*   if (thermo) {
     byte temperature = 0;
     byte humidity = 0;
     byte DH11rawdata[40] = {0};
@@ -193,6 +194,17 @@ void loop() {
     delay(1000);
     Display4((ul)humidity);
     delay(1000);
+  } 
+ */  
+  // thermometer program using Thermistor
+  if (thermo) {
+    int tempReading = analogRead(thermometer);
+    // This is OK
+    double tempK = log(10000.0 * ((1024.0 / tempReading - 1)));
+    tempK = 1 / (0.001129148 + (0.000234125 + (0.0000000876741 * tempK * tempK )) * tempK );       //  Temp Kelvin
+    float tempC = tempK - 273.15;            // Convert Kelvin to Celcius
+    Serial.println(tempC);
+    Display4((int) tempC);
   } else if (edit) {
     Display4(setuptmp);
   } else {
