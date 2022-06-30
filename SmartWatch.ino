@@ -11,7 +11,7 @@ typedef struct {
 } eztm;
 
 // constant define
-const bool debug = false;
+// const bool debug = false;
 
 const int disp_interval = 100;
 
@@ -121,17 +121,17 @@ void setup() {
     digitalWrite(digit[i], HIGH);
   }
   irrecv.enableIRIn();
-  Serial.begin(9600);
+  // Serial.begin(9600);
   initialtime = 43200000; //set clock start time for microsecond
 }
 
 void loop() {
-  if(debug) Serial.println("LOOP START");
+  // if(debug) Serial.println("LOOP START");
   // control by remote
   if (irrecv.decode(&results)) {
     int a = IR2num();
-      Serial.print("IR receive: ");
-      Serial.println(a);
+      // Serial.print("IR receive: ");
+      // Serial.println(a);
     if(a == OK) {
       edit = true;
       edit_index = 0;
@@ -154,7 +154,7 @@ void loop() {
         tmp *= 60;
         tmp *= 1000;
         initialtime = tmp - millis();
-        if(debug) Serial.println(initialtime);
+        // if(debug) Serial.println(initialtime);
         edit = false;
       }
       edit_index++;
@@ -162,7 +162,7 @@ void loop() {
     
     irrecv.resume(); // receive the next value
     // display setup tmp
-    if(debug) Serial.println(setuptmp);
+    // if(debug) Serial.println(setuptmp);
   }
 
   // DH11 read temperature and humidity
@@ -203,38 +203,38 @@ void loop() {
     double tempK = log(10000.0 * ((1024.0 / tempReading - 1)));
     tempK = 1 / (0.001129148 + (0.000234125 + (0.0000000876741 * tempK * tempK )) * tempK );       //  Temp Kelvin
     float tempC = tempK - 273.15;            // Convert Kelvin to Celcius
-    Serial.println(tempC);
+    // Serial.println(tempC);
     Display4((int) tempC);
   } else if (edit) {
     Display4(setuptmp);
   } else {
     // fetch distance
     long distance = sr04.Distance();
-    if(debug) {
-      Serial.print(distance);
-      Serial.println("cm");
-    }
+    // if(debug) {
+      // Serial.print(distance);
+      // Serial.println("cm");
+    // }
 
     // calc current time
     ul cpu, real;
     cpu = millis();
     real = cpu + initialtime;
-    if(debug) Serial.println(real);
+    // if(debug) Serial.println(real);
 
     // calc which number to display
     eztm t = get_tm(real);
     ul hm = t.hour*100 + t.minute;
-    if(debug) Serial.println(hm);
+    // if(debug) Serial.println(hm);
     if(distance < 30) Display4(hm);
 
-    if(debug) {
-      Serial.println("time is");
-      Serial.println(real);
-      Serial.print(t.hour);
-      Serial.print(":");
-      Serial.print(t.minute);
-      Serial.print(":");
-      Serial.println(t.second);
-    }
+    // if(debug) {
+    //   Serial.println("time is");
+    //   Serial.println(real);
+    //   Serial.print(t.hour);
+    //   Serial.print(":");
+    //   Serial.print(t.minute);
+    //   Serial.print(":");
+    //   Serial.println(t.second);
+    // }
   }
 }
