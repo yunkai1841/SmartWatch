@@ -13,6 +13,12 @@
 
 <br>
 
+## Wiring Diagram
+
+![Diagram](SmartWatch.png)
+
+<br>
+
 <!----------------------------------------------------------------------------->
 
 [Badge License]: https://img.shields.io/badge/License-Unknown-darkgray.svg?style=for-the-badge
