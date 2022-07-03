@@ -3,6 +3,7 @@
 // #include <SimpleDHT.h>
 
 #include "Codes.hpp"
+#include "Temperature.hpp"
 
 
 #define DEBUG
@@ -46,7 +47,7 @@ struct eztm {
 // constant define
 // const bool debug = false;
 
-const int digit[] = {2, 3, 4, 5}; // 7seg pin 0~4
+const int digit[] = { 2 , 3 , 4 , 5 }; // 7seg pin 0~4
 
 const int
     disp_interval = 100 ,
@@ -143,6 +144,7 @@ void setup(){
     #endif
 }
 
+
 void loop(){
 
     println("LOOP START");
@@ -151,14 +153,14 @@ void loop(){
 
     if(irrecv.decode(& results)){
 
-        int a = parseIRCode(results.value);
+        int event = parseIRCode(results.value);
 
         delay(500);
 
         print("IR receive: ");
-        println(a);
+        println(event);
 
-        switch(a){
+        switch(event){
         case Ok :
             edit = true;
             edit_index = 0;
@@ -174,9 +176,9 @@ void loop(){
 
         // Edit time mode
 
-        if(edit && 0 <= a && 9 >= a){
+        if(edit && 0 <= event && 9 >= event){
 
-            setuptmp = (setuptmp * 10) + a;
+            setuptmp = (setuptmp * 10) + event;
 
             if(edit_index == 3){
 
@@ -243,21 +245,12 @@ void loop(){
 
     if(thermo){
 
-        int tempReading = analogRead(thermometer);
+        const double temperature =
+            Temperature::inCelcius(thermometer);
 
-        // This is OK
+        println(temperature);
 
-        double kelvin = log(10000.0 * ((1024.0 / tempReading - 1)));
-
-        kelvin = 1 / (0.001129148 + (0.000234125 + (0.0000000876741 * kelvin * kelvin )) * kelvin );
-
-        // Convert Kelvin to Celcius
-
-        float celcius = kelvin - 273.15;
-
-        println(celcius);
-
-        Display4((int) celcius);
+        Display4((int) temperature);
 
         return;
     }
