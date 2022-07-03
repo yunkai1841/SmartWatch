@@ -4,6 +4,7 @@
 
 #include "Codes.hpp"
 #include "Temperature.hpp"
+#include "TimeStamp.hpp"
 
 
 #define DEBUG
@@ -28,21 +29,7 @@
 using ul = unsigned long;
 
 
-struct eztm {
 
-    ul second , minute , hour ;
-
-    eztm(ul millis){
-
-        second = millis / 1000 ;
-        minute = second / 60 ;
-        hour = minute / 60 ;
-
-        second %= 60;
-        minute %= 60;
-        hour %= 24;
-    }
-};
 
 // constant define
 // const bool debug = false;
@@ -119,6 +106,15 @@ void Display4(ul x){
 }
 
 
+void displayTemperature(){
+
+    const double temperature =
+        Temperature::inCelcius(thermometer);
+
+    println(temperature);
+
+    Display4((int) temperature);
+}
 
 
 
@@ -172,35 +168,41 @@ void loop(){
         case Down :
             thermo = false;
             break;
-        }
+        default:
 
-        // Edit time mode
+            if(!edit)
+                break;
 
-        if(edit && 0 <= event && 9 >= event){
 
-            setuptmp = (setuptmp * 10) + event;
+            // Edit time mode
 
-            if(edit_index == 3){
+            if(0 <= event && 9 >= event){
 
-                // edit state is end
-                // calculate and set initial time
+                setuptmp = (setuptmp * 10) + event;
 
-                int hourtmp = setuptmp / 100;
-                int minutetmp = setuptmp % 100;
+                if(edit_index == 3){
 
-                ul tmp = (hourtmp * 60 + minutetmp) * 60 * 1000;
+                    // edit state is end
+                    // calculate and set initial time
 
-                initialtime = tmp - millis();
+                    int hourtmp = setuptmp / 100;
+                    int minutetmp = setuptmp % 100;
 
-                println(initialtime);
+                    ul tmp = (hourtmp * 60 + minutetmp) * 60 * 1000;
 
-                edit = false;
+                    initialtime = tmp - millis();
+
+                    println(initialtime);
+
+                    edit = false;
+                }
+
+                edit_index++;
             }
-
-            edit_index++;
         }
 
-        // receive the next value
+
+        // Receive the next value
 
         irrecv.resume();
 
@@ -208,6 +210,7 @@ void loop(){
 
         println(setuptmp);
     }
+
 
     // DH11 read temperature and humidity
     // dont work maybe out of memory
@@ -241,17 +244,9 @@ void loop(){
     }
     */
 
-    // Thermometer program using Thermistor
 
     if(thermo){
-
-        const double temperature =
-            Temperature::inCelcius(thermometer);
-
-        println(temperature);
-
-        Display4((int) temperature);
-
+        displayTemperature();
         return;
     }
 
@@ -277,8 +272,8 @@ void loop(){
 
     // Calc which number to display
 
-    eztm t = eztm(real);
-    ul hm = t.hour * 100 + t.minute;
+    TimeStamp time(real);
+    ul hm = time.hour * 100 + time.minute;
 
     println(hm);
 
@@ -287,9 +282,9 @@ void loop(){
 
     println("time is");
     println(real);
-    print(t.hour);
+    print(time.hour);
     print(":");
-    print(t.minute);
+    print(time.minute);
     print(":");
-    println(t.second);
+    println(time.second);
 }
