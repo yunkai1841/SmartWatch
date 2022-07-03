@@ -45,13 +45,15 @@ decode_results results;
 
 void setup(){
 
-    pinMode(Pins::latch,OUTPUT);
-    pinMode(Pins::clock,OUTPUT);
-    pinMode(Pins::data,OUTPUT);
+    using namespace Pins;
+
+    pinMode(latch,OUTPUT);
+    pinMode(clock,OUTPUT);
+    pinMode(data,OUTPUT);
 
     for(int i = 0;i < 4;i++){
-        pinMode(Pins::digit[i],OUTPUT);
-        digitalWrite(Pins::digit[i],HIGH);
+        pinMode(digit[i],OUTPUT);
+        digitalWrite(digit[i],HIGH);
     }
 
     irrecv.enableIRIn();
