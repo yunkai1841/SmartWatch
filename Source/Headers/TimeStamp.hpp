@@ -2,11 +2,14 @@
 #define Header_TimeStamp
 
 
+#include "Types.hpp"
+
+
 struct TimeStamp {
 
-    unsigned long second , minute , hour ;
+    ul second , minute , hour ;
 
-    TimeStamp(unsigned long millis){
+    TimeStamp(ul millis){
 
         second = millis / 1000 ;
         minute = second / 60 ;

@@ -5,6 +5,7 @@
 #include "Codes.hpp"
 #include "Temperature.hpp"
 #include "TimeStamp.hpp"
+#include "Types.hpp"
 
 
 #define DEBUG
@@ -24,9 +25,6 @@
     #define print(args)
 
 #endif
-
-
-using ul = unsigned long;
 
 
 
