@@ -90,7 +90,7 @@ ul initialtime;
 
 // Set up ultra sonic sensor and IR sensor
 
-Ultrasonic sr04 ( echo , trig );
+Ultrasonic sr04 ( trig , echo , 10000);
 IRrecv irrecv(IRreceiver);
 decode_results results;
 
