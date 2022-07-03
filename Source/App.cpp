@@ -2,6 +2,8 @@
 #include <IRremote.h>
 // #include <SimpleDHT.h>
 
+#include "Codes.hpp"
+
 
 #define DEBUG
 
@@ -58,15 +60,7 @@ const int
 
 // int pinDHT11 = 12;
 
-#define UP 20
-#define DOWN 21
-#define LEFT 22
-#define RIGHT 23
-#define OK 24
-#define STAR 25
-#define SHARPP 26
-#define REPT -2
-#define OTHER -1
+
 
 const unsigned char table [] = {
     0x3f , 0x06 , 0x5b , 0x4f , 0x66 , 0x6d ,
@@ -124,37 +118,7 @@ void Display4(ul x){
 }
 
 
-// Translate raw IR code to int
 
-int IR2num(){
-    switch(results.value){
-
-    default : return OTHER ;
-
-    case 0xFF4AB5 : return 0 ;
-    case 0xFF6897 : return 1 ;
-    case 0xFF9867 : return 2 ;
-    case 0xFFB04F : return 3 ;
-    case 0xFF30CF : return 4 ;
-    case 0xFF18E7 : return 5 ;
-    case 0xFF7A85 : return 6 ;
-    case 0xFF10EF : return 7 ;
-    case 0xFF38C7 : return 8 ;
-    case 0xFF5AA5 : return 9 ;
-
-    case 0xFFC23D : return RIGHT ;
-    case 0xFF22DD : return LEFT ;
-    case 0xFFA857 : return DOWN ;
-    case 0xFF629D : return UP ;
-    case 0xFF02FD : return OK ;
-
-    case 0xFFFFFFFF : return REPT ;
-    case 0xFF52AD : return SHARPP ;
-    case 0xFF42BD : return STAR ;
-    }
-
-    delay(500);
-}
 
 
 void setup(){
@@ -187,21 +151,23 @@ void loop(){
 
     if(irrecv.decode(& results)){
 
-        int a = IR2num();
+        int a = parseIRCode(results.value);
+
+        delay(500);
 
         print("IR receive: ");
         println(a);
 
         switch(a){
-        case OK :
+        case Ok :
             edit = true;
             edit_index = 0;
             setuptmp = 0;
             break;
-        case UP :
+        case Up :
             thermo = true;;
             break;
-        case DOWN :
+        case Down :
             thermo = false;
             break;
         }
