@@ -1,4 +1,4 @@
-#include <SR04.h>
+#include <Ultrasonic.h>
 #include <IRremote.h>
 // #include <SimpleDHT.h>
 
@@ -24,9 +24,10 @@
 
 using ul = unsigned long;
 
+
 struct eztm {
 
-    ul second , minute , hour;
+    ul second , minute , hour ;
 
     eztm(ul millis){
 
@@ -38,7 +39,6 @@ struct eztm {
         minute %= 60;
         hour %= 24;
     }
-
 };
 
 // constant define
@@ -90,7 +90,7 @@ ul initialtime;
 
 // Set up ultra sonic sensor and IR sensor
 
-SR04 sr04 = SR04(echo,trig);
+Ultrasonic sr04 ( echo , trig );
 IRrecv irrecv(IRreceiver);
 decode_results results;
 
@@ -303,7 +303,7 @@ void loop(){
 
     // Fetch distance
 
-    long distance = sr04.Distance();
+    long distance = sr04.Ranging(CM);
 
     print(distance);
     println("cm");
