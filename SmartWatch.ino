@@ -24,7 +24,7 @@
 
 using ul = unsigned long;
 
-typedef struct {
+struct eztm {
 
     ul second , minute , hour;
 
@@ -39,7 +39,7 @@ typedef struct {
         hour %= 24;
     }
 
-} eztm;
+};
 
 // constant define
 // const bool debug = false;
@@ -283,7 +283,7 @@ void loop(){
 
         double kelvin = log(10000.0 * ((1024.0 / tempReading - 1)));
 
-        kelvin = 1 / (0.001129148 + (0.000234125 + (0.0000000876741 * tempK * tempK )) * tempK );
+        kelvin = 1 / (0.001129148 + (0.000234125 + (0.0000000876741 * kelvin * kelvin )) * kelvin );
 
         // Convert Kelvin to Celcius
 
