@@ -2,30 +2,15 @@
 #include <IRremote.h>
 // #include <SimpleDHT.h>
 
-#include "Codes.hpp"
-#include "Temperature.hpp"
-#include "TimeStamp.hpp"
-#include "Types.hpp"
-
 
 #define DEBUG
 
 
-#ifdef DEBUG
-
-    #define println(args)   \
-        Serial.println(args);
-
-    #define print(args)   \
-        Serial.print(args);
-
-#else
-
-    #define println(args)
-    #define print(args)
-
-#endif
-
+#include "Codes.hpp"
+#include "Temperature.hpp"
+#include "TimeStamp.hpp"
+#include "Types.hpp"
+#include "Debug.hpp"
 
 
 
