@@ -52,9 +52,7 @@ const int
     IRreceiver = 11 ,       //  Signal Pin of IR receiver to Arduino Digital Pin 11
     clock = 10 ,            //  74HC595 pin 10 SHCP
     latch = 9 ,             //  74HC595 pin 9 STCP
-    data = 8 ;              //  74HC595 pin 8 DS
-
-int
+    data = 8 ,              //  74HC595 pin 8 DS
     echo = 7 ,
     trig = 6 ;
 
