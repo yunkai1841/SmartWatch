@@ -137,36 +137,52 @@ void loop(){
     }
 
 
+
+    /*
+
     // DH11 read temperature and humidity
     // dont work maybe out of memory
-    /*   if (thermo) {
-    byte temperature = 0;
-    byte humidity = 0;
-    byte DH11rawdata[40] = {0};
-    if (dht11.read(12, &temperature, &humidity, DH11rawdata)) {
-    Serial.println("Read DHT11 failed");
-    return;
-    }
-    if (debug) {
-    Serial.print("Sample RAW Bits: ");
-    for (int i = 0; i < 40; i++) {
-    Serial.print((int)DH11rawdata[i]);
-    if (i > 0 && ((i + 1) % 4) == 0) {
-    Serial.print(' ');
-    }
-    }
-    Serial.println("");
 
-    Serial.print("Sample OK: ");
-    Serial.print((int)temperature); Serial.print(" *C, ");
-    Serial.print((int)humidity); Serial.println(" %");
+    if(thermo){
+
+        byte temperature = 0;
+        byte humidity = 0;
+        byte DH11rawdata[40] = {0};
+
+        if(dht11.read(12,& temperature,& humidity,DH11rawdata)){
+            println("Read DHT11 failed");
+            return;
+        }
+
+        if(debug){
+
+            print("Sample RAW Bits: ");
+
+            for(int i = 0;i < 40; i++){
+                print((int) DH11rawdata[i]);
+
+                if(i > 0 && ((i + 1) % 4) == 0)
+                    print(' ');
+            }
+
+            println("");
+
+            print("Sample OK: ");
+            print((int) temperature);
+            print(" *C, ");
+            print((int)humidity);
+            println(" %");
+        }
+
+        Display::digits((ul) temperature);
+
+        delay(1000);
+
+        Display::digits((ul) humidity);
+
+        delay(1000);
     }
 
-    Display::digits((ul)temperature);
-    delay(1000);
-    Display::digits((ul)humidity);
-    delay(1000);
-    }
     */
 
 
