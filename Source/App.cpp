@@ -11,25 +11,12 @@
 #include "TimeStamp.hpp"
 #include "Types.hpp"
 #include "Debug.hpp"
+#include "Pins.hpp"
 
 
 
 // constant define
 // const bool debug = false;
-
-const int digit[] = { 2 , 3 , 4 , 5 }; // 7seg pin 0~4
-
-const int
-    disp_interval = 100 ,
-    thermometer = 0 ,       //  Analog pin for thermomistor
-    IRreceiver = 11 ,       //  Signal Pin of IR receiver to Arduino Digital Pin 11
-    clock = 10 ,            //  74HC595 pin 10 SHCP
-    latch = 9 ,             //  74HC595 pin 9 STCP
-    data = 8 ,              //  74HC595 pin 8 DS
-    echo = 7 ,
-    trig = 6 ;
-
-// int pinDHT11 = 12;
 
 
 
@@ -55,8 +42,9 @@ ul initialtime;
 
 // Set up ultra sonic sensor and IR sensor
 
-Ultrasonic sr04 ( trig , echo , 10000);
-IRrecv irrecv(IRreceiver);
+Ultrasonic sr04 ( Pins::echo , Pins::trig );
+IRrecv irrecv( Pins::IRreceiver );
+
 decode_results results;
 
 // SimpleDHT11 dht11;
@@ -67,22 +55,22 @@ decode_results results;
 
 void Display(unsigned char num){
 
-    digitalWrite(latch,LOW);
-    shiftOut(data,clock,MSBFIRST,table[num]);
-    digitalWrite(latch,HIGH);
+    digitalWrite(Pins::latch,LOW);
+    shiftOut(Pins::data,Pins::clock,MSBFIRST,table[num]);
+    digitalWrite(Pins::latch,HIGH);
 }
 
 void Display4(ul x){
 
     for(int i = 0;i < 4;i++){
 
-        digitalWrite(digit[i],LOW);
+        digitalWrite(Pins::digit[i],LOW);
 
         Display(x % 10);
 
-        delay(disp_interval);
+        delay(Pins::disp_interval);
 
-        digitalWrite(digit[i],HIGH);
+        digitalWrite(Pins::digit[i],HIGH);
 
         x /= 10;
     }
@@ -92,7 +80,7 @@ void Display4(ul x){
 void displayTemperature(){
 
     const double temperature =
-        Temperature::inCelcius(thermometer);
+        Temperature::inCelcius(Pins::thermometer);
 
     println(temperature);
 
@@ -103,13 +91,13 @@ void displayTemperature(){
 
 void setup(){
 
-    pinMode(latch,OUTPUT);
-    pinMode(clock,OUTPUT);
-    pinMode(data,OUTPUT);
+    pinMode(Pins::latch,OUTPUT);
+    pinMode(Pins::clock,OUTPUT);
+    pinMode(Pins::data,OUTPUT);
 
     for(int i = 0;i < 4;i++){
-        pinMode(digit[i],OUTPUT);
-        digitalWrite(digit[i],HIGH);
+        pinMode(Pins::digit[i],OUTPUT);
+        digitalWrite(Pins::digit[i],HIGH);
     }
 
     irrecv.enableIRIn();
