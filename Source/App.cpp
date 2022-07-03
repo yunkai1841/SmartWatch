@@ -12,19 +12,12 @@
 #include "Types.hpp"
 #include "Debug.hpp"
 #include "Pins.hpp"
+#include "Display.hpp"
 
 
 
 // constant define
 // const bool debug = false;
-
-
-
-const unsigned char table [] = {
-    0x3f , 0x06 , 0x5b , 0x4f , 0x66 , 0x6d ,
-    0x7d , 0x07 , 0x7f , 0x6f , 0x77 , 0x7c ,
-    0x39 , 0x5e , 0x79 , 0x71 , 0x00
-};
 
 
 // Set clock start time for microsecond
@@ -48,45 +41,6 @@ IRrecv irrecv( Pins::IRreceiver );
 decode_results results;
 
 // SimpleDHT11 dht11;
-
-
-
-
-
-void Display(unsigned char num){
-
-    digitalWrite(Pins::latch,LOW);
-    shiftOut(Pins::data,Pins::clock,MSBFIRST,table[num]);
-    digitalWrite(Pins::latch,HIGH);
-}
-
-void Display4(ul x){
-
-    for(int i = 0;i < 4;i++){
-
-        digitalWrite(Pins::digit[i],LOW);
-
-        Display(x % 10);
-
-        delay(Pins::disp_interval);
-
-        digitalWrite(Pins::digit[i],HIGH);
-
-        x /= 10;
-    }
-}
-
-
-void displayTemperature(){
-
-    const double temperature =
-        Temperature::inCelcius(Pins::thermometer);
-
-    println(temperature);
-
-    Display4((int) temperature);
-}
-
 
 
 void setup(){
@@ -208,21 +162,21 @@ void loop(){
     Serial.print((int)humidity); Serial.println(" %");
     }
 
-    Display4((ul)temperature);
+    Display::digits((ul)temperature);
     delay(1000);
-    Display4((ul)humidity);
+    Display::digits((ul)humidity);
     delay(1000);
     }
     */
 
 
     if(thermo){
-        displayTemperature();
+        Display::temperature();
         return;
     }
 
     if(edit){
-        Display4(setuptmp);
+        Display::digits(setuptmp);
         return;
     }
 
@@ -249,7 +203,7 @@ void loop(){
     println(hm);
 
     if(distance < 30)
-        Display4(hm);
+        Display::digits(hm);
 
     println("time is");
     println(real);

@@ -2,6 +2,9 @@
 #define Header_Temperature
 
 
+#include <Arduino.h>
+
+
 namespace Temperature {
 
 
