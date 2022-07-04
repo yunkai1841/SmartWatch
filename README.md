@@ -21,7 +21,7 @@
 
 <!----------------------------------------------------------------------------->
 
-[Badge License]: https://img.shields.io/badge/License-Unknown-darkgray.svg?style=for-the-badge
+[Badge License]: https://img.shields.io/badge/License-Apache_2.0-blue.svg
 
 [License]: #
 
