@@ -15,16 +15,18 @@
 
 ## Wiring Diagram
 
-![Diagram](SmartWatch.png)
+![Schematic]
 
-<br>
 
 <!----------------------------------------------------------------------------->
 
-[Badge License]: https://img.shields.io/badge/License-Apache_2.0-blue.svg
+[Ultrasonic-HC-SR04]: https://github.com/toi-store/Ultrasonic-HC-SR04
+[IRRemote]: https://github.com/Arduino-IRremote/Arduino-IRremote
 
+[Schematic]: Resources/Schematic.png
 [License]: #
 
 
-[Ultrasonic-HC-SR04]: https://github.com/toi-store/Ultrasonic-HC-SR04
-[IRRemote]: https://github.com/Arduino-IRremote/Arduino-IRremote
+<!--------------------------------[ Badges ]----------------------------------->
+
+[Badge License]: https://img.shields.io/badge/License-Apache_2.0-D22128?style=for-the-badge
