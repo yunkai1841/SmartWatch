@@ -6,73 +6,18 @@
 #define DEBUG
 
 
-#ifdef DEBUG
-
-    #define println(args)   \
-        Serial.println(args);
-
-    #define print(args)   \
-        Serial.print(args);
-
-#else
-
-    #define println(args)
-    #define print(args)
-
-#endif
+#include "Codes.hpp"
+#include "Temperature.hpp"
+#include "TimeStamp.hpp"
+#include "Types.hpp"
+#include "Debug.hpp"
+#include "Pins.hpp"
+#include "Display.hpp"
 
 
-using ul = unsigned long;
-
-
-struct eztm {
-
-    ul second , minute , hour ;
-
-    eztm(ul millis){
-
-        second = millis / 1000 ;
-        minute = second / 60 ;
-        hour = minute / 60 ;
-
-        second %= 60;
-        minute %= 60;
-        hour %= 24;
-    }
-};
 
 // constant define
 // const bool debug = false;
-
-const int digit[] = {2, 3, 4, 5}; // 7seg pin 0~4
-
-const int
-    disp_interval = 100 ,
-    thermometer = 0 ,       //  Analog pin for thermomistor
-    IRreceiver = 11 ,       //  Signal Pin of IR receiver to Arduino Digital Pin 11
-    clock = 10 ,            //  74HC595 pin 10 SHCP
-    latch = 9 ,             //  74HC595 pin 9 STCP
-    data = 8 ,              //  74HC595 pin 8 DS
-    echo = 7 ,
-    trig = 6 ;
-
-// int pinDHT11 = 12;
-
-#define UP 20
-#define DOWN 21
-#define LEFT 22
-#define RIGHT 23
-#define OK 24
-#define STAR 25
-#define SHARPP 26
-#define REPT -2
-#define OTHER -1
-
-const unsigned char table [] = {
-    0x3f , 0x06 , 0x5b , 0x4f , 0x66 , 0x6d ,
-    0x7d , 0x07 , 0x7f , 0x6f , 0x77 , 0x7c ,
-    0x39 , 0x5e , 0x79 , 0x71 , 0x00
-};
 
 
 // Set clock start time for microsecond
@@ -90,74 +35,17 @@ ul initialtime;
 
 // Set up ultra sonic sensor and IR sensor
 
-Ultrasonic sr04 ( trig , echo , 10000);
-IRrecv irrecv(IRreceiver);
+Ultrasonic sr04 ( Pins::echo , Pins::trig );
+IRrecv irrecv( Pins::IRreceiver );
+
 decode_results results;
 
 // SimpleDHT11 dht11;
 
 
-
-
-
-void Display(unsigned char num){
-
-    digitalWrite(latch,LOW);
-    shiftOut(data,clock,MSBFIRST,table[num]);
-    digitalWrite(latch,HIGH);
-}
-
-void Display4(ul x){
-
-    for(int i = 0;i < 4;i++){
-
-        digitalWrite(digit[i],LOW);
-
-        Display(x % 10);
-
-        delay(disp_interval);
-
-        digitalWrite(digit[i],HIGH);
-
-        x /= 10;
-    }
-}
-
-
-// Translate raw IR code to int
-
-int IR2num(){
-    switch(results.value){
-
-    default : return OTHER ;
-
-    case 0xFF4AB5 : return 0 ;
-    case 0xFF6897 : return 1 ;
-    case 0xFF9867 : return 2 ;
-    case 0xFFB04F : return 3 ;
-    case 0xFF30CF : return 4 ;
-    case 0xFF18E7 : return 5 ;
-    case 0xFF7A85 : return 6 ;
-    case 0xFF10EF : return 7 ;
-    case 0xFF38C7 : return 8 ;
-    case 0xFF5AA5 : return 9 ;
-
-    case 0xFFC23D : return RIGHT ;
-    case 0xFF22DD : return LEFT ;
-    case 0xFFA857 : return DOWN ;
-    case 0xFF629D : return UP ;
-    case 0xFF02FD : return OK ;
-
-    case 0xFFFFFFFF : return REPT ;
-    case 0xFF52AD : return SHARPP ;
-    case 0xFF42BD : return STAR ;
-    }
-
-    delay(500);
-}
-
-
 void setup(){
+
+    using namespace Pins;
 
     pinMode(latch,OUTPUT);
     pinMode(clock,OUTPUT);
@@ -179,6 +67,7 @@ void setup(){
     #endif
 }
 
+
 void loop(){
 
     println("LOOP START");
@@ -187,52 +76,60 @@ void loop(){
 
     if(irrecv.decode(& results)){
 
-        int a = IR2num();
+        int event = parseIRCode(results.value);
+
+        delay(500);
 
         print("IR receive: ");
-        println(a);
+        println(event);
 
-        switch(a){
-        case OK :
+        switch(event){
+        case Ok :
             edit = true;
             edit_index = 0;
             setuptmp = 0;
             break;
-        case UP :
+        case Up :
             thermo = true;;
             break;
-        case DOWN :
+        case Down :
             thermo = false;
             break;
-        }
+        default:
 
-        // Edit time mode
+            if(!edit)
+                break;
 
-        if(edit && 0 <= a && 9 >= a){
 
-            setuptmp = (setuptmp * 10) + a;
+            // Edit time mode
 
-            if(edit_index == 3){
+            if(0 <= event && 9 >= event){
 
-                // edit state is end
-                // calculate and set initial time
+                setuptmp = (setuptmp * 10) + event;
 
-                int hourtmp = setuptmp / 100;
-                int minutetmp = setuptmp % 100;
+                if(edit_index == 3){
 
-                ul tmp = (hourtmp * 60 + minutetmp) * 60 * 1000;
+                    // edit state is end
+                    // calculate and set initial time
 
-                initialtime = tmp - millis();
+                    int hourtmp = setuptmp / 100;
+                    int minutetmp = setuptmp % 100;
 
-                println(initialtime);
+                    ul tmp = (hourtmp * 60 + minutetmp) * 60 * 1000;
 
-                edit = false;
+                    initialtime = tmp - millis();
+
+                    println(initialtime);
+
+                    edit = false;
+                }
+
+                edit_index++;
             }
-
-            edit_index++;
         }
 
-        // receive the next value
+
+        // Receive the next value
 
         irrecv.resume();
 
@@ -241,63 +138,63 @@ void loop(){
         println(setuptmp);
     }
 
+
+
+    /*
+
     // DH11 read temperature and humidity
     // dont work maybe out of memory
-    /*   if (thermo) {
-    byte temperature = 0;
-    byte humidity = 0;
-    byte DH11rawdata[40] = {0};
-    if (dht11.read(12, &temperature, &humidity, DH11rawdata)) {
-    Serial.println("Read DHT11 failed");
-    return;
-    }
-    if (debug) {
-    Serial.print("Sample RAW Bits: ");
-    for (int i = 0; i < 40; i++) {
-    Serial.print((int)DH11rawdata[i]);
-    if (i > 0 && ((i + 1) % 4) == 0) {
-    Serial.print(' ');
-    }
-    }
-    Serial.println("");
-
-    Serial.print("Sample OK: ");
-    Serial.print((int)temperature); Serial.print(" *C, ");
-    Serial.print((int)humidity); Serial.println(" %");
-    }
-
-    Display4((ul)temperature);
-    delay(1000);
-    Display4((ul)humidity);
-    delay(1000);
-    }
-    */
-
-    // Thermometer program using Thermistor
 
     if(thermo){
 
-        int tempReading = analogRead(thermometer);
+        byte temperature = 0;
+        byte humidity = 0;
+        byte DH11rawdata[40] = {0};
 
-        // This is OK
+        if(dht11.read(12,& temperature,& humidity,DH11rawdata)){
+            println("Read DHT11 failed");
+            return;
+        }
 
-        double kelvin = log(10000.0 * ((1024.0 / tempReading - 1)));
+        if(debug){
 
-        kelvin = 1 / (0.001129148 + (0.000234125 + (0.0000000876741 * kelvin * kelvin )) * kelvin );
+            print("Sample RAW Bits: ");
 
-        // Convert Kelvin to Celcius
+            for(int i = 0;i < 40; i++){
+                print((int) DH11rawdata[i]);
 
-        float celcius = kelvin - 273.15;
+                if(i > 0 && ((i + 1) % 4) == 0)
+                    print(' ');
+            }
 
-        println(celcius);
+            println("");
 
-        Display4((int) celcius);
+            print("Sample OK: ");
+            print((int) temperature);
+            print(" *C, ");
+            print((int)humidity);
+            println(" %");
+        }
 
+        Display::digits((ul) temperature);
+
+        delay(1000);
+
+        Display::digits((ul) humidity);
+
+        delay(1000);
+    }
+
+    */
+
+
+    if(thermo){
+        Display::temperature();
         return;
     }
 
     if(edit){
-        Display4(setuptmp);
+        Display::digits(setuptmp);
         return;
     }
 
@@ -318,19 +215,19 @@ void loop(){
 
     // Calc which number to display
 
-    eztm t = eztm(real);
-    ul hm = t.hour * 100 + t.minute;
+    TimeStamp time(real);
+    ul hm = time.hour * 100 + time.minute;
 
     println(hm);
 
     if(distance < 30)
-        Display4(hm);
+        Display::digits(hm);
 
     println("time is");
     println(real);
-    print(t.hour);
+    print(time.hour);
     print(":");
-    print(t.minute);
+    print(time.minute);
     print(":");
-    println(t.second);
+    println(time.second);
 }
