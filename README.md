@@ -22,15 +22,17 @@ lift your arm and you can remote control it.
 
 ## Parts List
 
--   **Arduino UNO**
 -   **7 Segment 4 Digit LED**
--   **74HC595**
--   **HC-SR04**
 -   **4 x 220Ω Resistor**
+-   **Arduino UNO**
 -   **IR Receiver**
 -   **IR Remote**
 
     *Unknown*
+
+-   **74HC595**
+-   **HC-SR04**
+
 
 <br>
 
