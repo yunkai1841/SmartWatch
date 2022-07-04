@@ -18,26 +18,37 @@ lift your arm and you can remote control it.
 - **[IRRemote]**
 
 <br>
+<br>
 
-## Material list
+## Parts List
 
-- Arduino UNO
-- 7 segment 4 digit LED
-- 74HC595
-- HC-SR04
-- 220Ω resister × 4
-- IR receiver
-- IR remote (unknown)
+-   **Arduino UNO**
+-   **7 Segment 4 Digit LED**
+-   **74HC595**
+-   **HC-SR04**
+-   **4 x 220Ω Resistor**
+-   **IR Receiver**
+-   **IR Remote**
 
-- Thermistor (Focusens MF52)
-- 10kΩ resister
+    *Unknown*
 
-Thermistor and 10kΩ resister is option.
-Those are not needed if you do not need to measure temperature.
+<br>
 
-If you use other remote or thermistor,
-`Source\Codes.cpp` and `Source\Temperature.cpp`
-should be replaced.
+### Optional
+
+*Only required for measuring temperature.*
+
+-   **`10㏀` Resistor**
+-   **Thermistor**
+
+    *Focusens MF52*
+
+<br>
+
+### Note
+
+If you use a different remote or thermistor, you will have to <br>
+replace  `Source\Codes.cpp`  &  `Source\Temperature.cpp` .
 
 <br>
 
