@@ -3,9 +3,11 @@
 
 *A project for the **Arduino UNO**.*
 
-A watch that do not need RTL (real time clock). 
-Display will be turned on automaticaly when you lift your arm. 
-Also, you can control it by remote. Adjust clock. 
+<br>
+
+This watch doesn't require a **R**eal **T**ime **C**lock, <br>
+it's display automatically turns on when you <br>
+lift your arm and you can remote control it.
 
 <br>
 
@@ -16,26 +18,39 @@ Also, you can control it by remote. Adjust clock.
 - **[IRRemote]**
 
 <br>
+<br>
 
-## Material list
+## Parts List
 
-- Arduino UNO
-- 7 segment 4 digit LED
-- 74HC595
-- HC-SR04
-- 220Ω resister × 4
-- IR receiver
-- IR remote (unknown)
+-   **7 Segment 4 Digit LED**
+-   **4 x 220Ω Resistor**
+-   **Arduino UNO**
+-   **IR Receiver**
+-   **IR Remote**
 
-- Thermistor (Focusens MF52)
-- 10kΩ resister
+    *Unknown*
 
-Thermistor and 10kΩ resister is option. 
-Those are not needed if you do not need to measure temperature.
+-   **74HC595**
+-   **HC-SR04**
 
-If you use other remote or thermistor, 
-`Source\Codes.cpp` and `Source\Temperature.cpp`
-should be replaced. 
+
+<br>
+
+### Optional
+
+*Only required for measuring temperature.*
+
+-   **`10㏀` Resistor**
+-   **Thermistor**
+
+    *Focusens MF52*
+
+<br>
+
+### Note
+
+If you use a different remote or thermistor, you will have to <br>
+replace  `Source\Codes.cpp`  &  `Source\Temperature.cpp` .
 
 <br>
 
